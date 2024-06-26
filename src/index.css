@@ -272,7 +272,7 @@ body {
 .rating {
   background-color: var(--color-background-100);
   border-radius: 0.5rem;
-  padding: 1.4rem 1.5rem;
+  padding: 1rem;
   margin-bottom: 0.5rem;
   font-weight: 600;
   display: flex;
@@ -363,6 +363,10 @@ body {
 @media (max-width: 768px) {
   .btn-toggle {
     position: static;
+  }
+
+  .btn-back {
+    top: 2rem;
   }
 
   .spinner:before {
