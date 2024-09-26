@@ -37,6 +37,30 @@ body {
   border-radius: 0.5rem;
 }
 
+.view-buttons {
+  display: flex;
+  justify-content:center;
+  align-items:center
+  gap: 10px; 
+}
+
+.view-buttons button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0; 
+  transition: background-color 0.3s; 
+}
+
+.view-buttons button.active {
+  background-color: #007bff; 
+  color: white; 
+}
+
+.view-buttons button:hover {
+  background-color: #0056b3; 
+}
+
 .main {
   margin-top: 1.5rem;
   height: calc(100vh - 4rem - 3 * 1.5rem);
@@ -116,21 +140,7 @@ body {
   font-size: 1.2rem;
 }
 
-.btn-toggle {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  height: 1.5rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--color-background-900);
-  color: var(--color-text);
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 999;
-}
+
 
 .list {
   list-style: none;
@@ -156,6 +166,10 @@ body {
 }
 
 .list.list-movies li:hover {
+  background-color: var(--color-background-100);
+}
+
+.list li:hover {
   background-color: var(--color-background-100);
 }
 
@@ -360,7 +374,7 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 892px) {
   .btn-toggle {
     position: static;
   }

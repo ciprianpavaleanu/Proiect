@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StartRating";
+import logo from "./assets/Logo.svg";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -16,8 +17,14 @@ export default function App() {
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
+  // Starea pentru a gestiona vizualizarea curentă
+  const [view, setView] = useState("search"); // "search" sau "watched"
+
   function handleSelectMovie(id) {
-    setSelectedId((selectedId) => (id === selectedId ? null : id));
+    setSelectedId((selectedId) => {
+      setView("watched"); // Schimbă vizualizarea la 'watched'
+      return id === selectedId ? null : id;
+    });
   }
 
   function handleCloseMovie() {
@@ -82,40 +89,64 @@ export default function App() {
     <>
       <NavBar>
         <Search query={query} setQuery={setQuery} />
-        <NumResults movies={movies} />
+
+        <div className="view-buttons">
+          <button
+            onClick={() => setView("search")}
+            className={view === "search" ? "active" : ""}
+          >
+            Search Results
+          </button>
+          <button
+            onClick={() => setView("watched")}
+            className={view === "watched" ? "active" : ""}
+          >
+            Watched List
+          </button>
+        </div>
       </NavBar>
+
       <Main>
-        <Box>
-          <span className="label">Search Results</span>
-          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
-          {isLoading && <Loader />}
-          {!isLoading && !error && (
-            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
-          )}
-          {error && <ErrorMessage message={error} />}
-        </Box>
-        <Box>
-          {selectedId ? (
-            <MovieDetails
-              selectedId={selectedId}
-              onCloseMovie={handleCloseMovie}
-              onAddWatched={handleAddWatched}
-              watched={watched}
-            />
-          ) : (
-            <>
-              <WatchedSummary watched={watched} />
-              <WatchedMoviesList
+        {/* Randează box-ul pentru Search Results doar dacă view este "search" */}
+        {view === "search" && (
+          <Box>
+            <span className="label">Search Results</span>
+            {isLoading && <Loader />}
+            {!isLoading && !error && (
+              <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+            )}
+            {error && <ErrorMessage message={error} />}
+          </Box>
+        )}
+
+        {/* Randează box-ul pentru Watched List doar dacă view este "watched" */}
+        {view === "watched" && (
+          <Box>
+            {selectedId ? (
+              <MovieDetails
+                selectedId={selectedId}
+                onCloseMovie={handleCloseMovie}
+                onAddWatched={handleAddWatched}
                 watched={watched}
-                onDeleteWatched={handleDeleteWatched}
               />
-            </>
-          )}
-        </Box>
+            ) : (
+              <>
+                <WatchedSummary watched={watched} />
+                <WatchedMoviesList
+                  watched={watched}
+                  onDeleteWatched={handleDeleteWatched}
+                  onSelectMovie={handleSelectMovie} // adaugă onSelectMovie
+                />
+              </>
+            )}
+          </Box>
+        )}
       </Main>
     </>
   );
 }
+
+// Restul componentelor rămâne neschimbat...
 
 function Loader() {
   return <div className="spinner"></div>;
@@ -141,7 +172,9 @@ function NavBar({ children }) {
 function Logo() {
   return (
     <div className="logo">
-      <span role="img">🍿</span>
+      <span role="img">
+        <img src={logo} width={80} height={40} />
+      </span>
       <h1>FilmoSphere</h1>
     </div>
   );
@@ -159,13 +192,6 @@ function Search({ query, setQuery }) {
   );
 }
 //3
-function NumResults({ movies }) {
-  return (
-    <p className="num-results">
-      Found <strong>{movies.length}</strong> results
-    </p>
-  );
-}
 
 //Main component
 function Main({ children }) {
@@ -174,16 +200,7 @@ function Main({ children }) {
 
 //1
 function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
-  return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "-" : "+"}
-      </button>
-
-      {isOpen && children}
-    </div>
-  );
+  return <div className="box">{children}</div>;
 }
 
 function MovieList({ movies, onSelectMovie }) {
@@ -381,7 +398,7 @@ function WatchedSummary({ watched }) {
   );
 }
 //4
-function WatchedMoviesList({ watched, onDeleteWatched }) {
+function WatchedMoviesList({ watched, onDeleteWatched, onSelectMovie }) {
   return (
     <ul className="list">
       {watched.map((movie) => (
@@ -389,15 +406,19 @@ function WatchedMoviesList({ watched, onDeleteWatched }) {
           movie={movie}
           key={movie.imdbID}
           onDeleteWatched={onDeleteWatched}
+          onSelectMovie={onSelectMovie} // adaugă prop-ul onSelectMovie
         />
       ))}
     </ul>
   );
 }
+
 //.1
-function WatchedMovie({ movie, onDeleteWatched }) {
+function WatchedMovie({ movie, onDeleteWatched, onSelectMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectMovie(movie.imdbID)}>
+      {" "}
+      {/* adaugă handler-ul onClick */}
       <img src={movie.poster} alt={`${movie.title} poster`} />
       <h3>{movie.title}</h3>
       <div>
@@ -416,7 +437,10 @@ function WatchedMovie({ movie, onDeleteWatched }) {
 
         <button
           className="btn-delete"
-          onClick={() => onDeleteWatched(movie.imdbID)}
+          onClick={(e) => {
+            e.stopPropagation(); // oprește propagarea click-ului pentru a nu selecta filmul
+            onDeleteWatched(movie.imdbID);
+          }}
         >
           ❌
         </button>
