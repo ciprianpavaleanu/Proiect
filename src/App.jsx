@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import StarRating from "./StartRating";
 import logo from "./assets/Logo.svg";
+=======
+>>>>>>> 91a0b3e8d0af5bfbfaa06a797e36c18ea8570ef5
 
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
-const watchingTime = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur, 0);
+import Loader from "./components/Loader";
+import Navbar from "./components/Navbar";
+import Search from "./components/Search";
+import NumResults from "./components/NumResults";
+import MainContent from "./components/MainContent";
+import Box from "./components/Box";
+import MovieList from "./components/MovieList";
+import ErrorMessage from "./components/ErrorMessage";
+import MovieDetails from "./components/MovieDetails";
+import WatchedSummary from "./components/WatchedSummary";
+import WatchedMoviesList from "./components/WatchedMoviesList";
 
 const KEY = "dea361f5";
 
@@ -48,7 +58,7 @@ export default function App() {
           setIsLoading(true);
           setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
             { signal: controller.signal }
           );
 
@@ -87,8 +97,9 @@ export default function App() {
 
   return (
     <>
-      <NavBar>
+      <Navbar>
         <Search query={query} setQuery={setQuery} />
+<<<<<<< HEAD
 
         <div className="view-buttons">
           <button
@@ -127,8 +138,35 @@ export default function App() {
                 selectedId={selectedId}
                 onCloseMovie={handleCloseMovie}
                 onAddWatched={handleAddWatched}
+=======
+        <NumResults movies={movies} />
+      </Navbar>
+      <MainContent>
+        <Box>
+          <span className="label">Search Results</span>
+
+          {isLoading && <Loader />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
+          {error && <ErrorMessage message={error} />}
+        </Box>
+        <Box>
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+              onAddWatched={handleAddWatched}
+              watched={watched}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMoviesList
+>>>>>>> 91a0b3e8d0af5bfbfaa06a797e36c18ea8570ef5
                 watched={watched}
               />
+<<<<<<< HEAD
             ) : (
               <>
                 <WatchedSummary watched={watched} />
@@ -448,3 +486,12 @@ function WatchedMovie({ movie, onDeleteWatched, onSelectMovie }) {
     </li>
   );
 }
+=======
+            </>
+          )}
+        </Box>
+      </MainContent>
+    </>
+  );
+}
+>>>>>>> 91a0b3e8d0af5bfbfaa06a797e36c18ea8570ef5
